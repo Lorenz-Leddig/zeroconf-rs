@@ -194,7 +194,7 @@ extern crate derive_builder;
 extern crate zeroconf_macros;
 #[cfg(target_os = "linux")]
 extern crate avahi_sys;
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(target_vendor = "apple")]
 extern crate bonjour_sys;
 #[macro_use]
 extern crate derive_getters;
@@ -225,8 +225,10 @@ pub mod txt_record;
 
 #[cfg(target_os = "linux")]
 pub mod avahi;
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub mod bonjour;
+#[cfg(all(target_os = "windows", feature = "windows-native"))]
+pub mod windows;
 
 pub use browser::{BrowserEvent, ServiceBrowserCallback, ServiceDiscovery, ServiceRemoval};
 pub use interface::*;
@@ -237,22 +239,31 @@ pub use service_type::*;
 #[cfg(target_os = "linux")]
 pub type MdnsBrowser = avahi::browser::AvahiMdnsBrowser;
 /// Type alias for the platform-specific mDNS browser implementation
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub type MdnsBrowser = bonjour::browser::BonjourMdnsBrowser;
+/// Type alias for the platform-specific mDNS browser implementation
+#[cfg(all(target_os = "windows", feature = "windows-native"))]
+pub type MdnsBrowser = windows::browser::WindowsMdnsBrowser;
 
 /// Type alias for the platform-specific mDNS service implementation
 #[cfg(target_os = "linux")]
 pub type MdnsService = avahi::service::AvahiMdnsService;
 /// Type alias for the platform-specific mDNS service implementation
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub type MdnsService = bonjour::service::BonjourMdnsService;
+/// Type alias for the platform-specific mDNS service implementation
+#[cfg(all(target_os = "windows", feature = "windows-native"))]
+pub type MdnsService = windows::service::WindowsMdnsService;
 
 /// Type alias for the platform-specific structure responsible for polling the mDNS event loop
 #[cfg(target_os = "linux")]
 pub type EventLoop = avahi::event_loop::AvahiEventLoop;
 /// Type alias for the platform-specific structure responsible for polling the mDNS event loop
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub type EventLoop = bonjour::event_loop::BonjourEventLoop;
+/// Type alias for the platform-specific structure responsible for polling the mDNS event loop
+#[cfg(all(target_os = "windows", feature = "windows-native"))]
+pub type EventLoop = windows::event_loop::WindowsEventLoop;
 
 /// Type alias for the platform-specific structure responsible for storing and accessing TXT
 /// record data
@@ -260,8 +271,12 @@ pub type EventLoop = bonjour::event_loop::BonjourEventLoop;
 pub type TxtRecord = avahi::txt_record::AvahiTxtRecord;
 /// Type alias for the platform-specific structure responsible for storing and accessing TXT
 /// record data
-#[cfg(any(target_vendor = "apple", target_vendor = "pc"))]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub type TxtRecord = bonjour::txt_record::BonjourTxtRecord;
+/// Type alias for the platform-specific structure responsible for storing and accessing TXT
+/// record data
+#[cfg(all(target_os = "windows", feature = "windows-native"))]
+pub type TxtRecord = windows::txt_record::WindowsTxtRecord;
 
 /// Result type for this library
 pub type Result<T> = std::result::Result<T, error::Error>;

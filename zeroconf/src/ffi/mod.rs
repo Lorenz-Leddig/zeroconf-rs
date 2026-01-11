@@ -91,7 +91,7 @@ pub(crate) mod bonjour {
     }
 }
 
-#[cfg(target_vendor = "pc")]
+#[cfg(any(target_vendor = "apple", feature = "windows-bonjour"))]
 pub(crate) mod bonjour {
     use crate::Result;
     use bonjour_sys::{dnssd_sock_t, fd_set, select, timeval};
